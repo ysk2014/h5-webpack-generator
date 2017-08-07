@@ -33,27 +33,27 @@ module.exports = {
                 exclude: /node_modules/
             },
             <% if (jsLoader == 'coffeescript') {%>
-                {
-                    test: /\.coffee$/,
-                    exclude: /node_modules/,
-                    use: [
-                        {
-                            loader: 'coffee-loader',
-                            options: { sourceMap: true }
-                        }
-                    ]
-                },
+            {
+                test: /\.coffee$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'coffee-loader',
+                        options: { sourceMap: true }
+                    }
+                ]
+            },
             <% } else if (jsLoader == 'typescript') { %>
-                {
-                    test: /\.coffee$/,
-                    exclude: /node_modules/,
-                    use: [
-                        {
-                            loader: 'coffee-loader',
-                            options: { sourceMap: true }
-                        }
-                    ]
-                },
+            {
+                test: /\.coffee$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'coffee-loader',
+                        options: { sourceMap: true }
+                    }
+                ]
+            },
             <% } %>
             
             {
@@ -74,14 +74,14 @@ module.exports = {
                 })
             }, 
             <% } else if (cssLoader == 'sass') {%>
-                {
-                    test: /\.scss$/,
-                    use: use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
-                        use: ['css-loader','sass-loader'],
-                        publicPath: '/css'
-                    })
-                }, 
+            {
+                test: /\.scss$/,
+                use: use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: ['css-loader','sass-loader'],
+                    publicPath: '/css'
+                })
+            }, 
             <% } %>
             
             {
@@ -127,7 +127,7 @@ module.exports = {
         <% if (multiple) {%>
         new ExtractTextPlugin('css/[name].[contenthash].min.css'),
         <% } else { %>
-            new ExtractTextPlugin('css/style.min.css'),
+        new ExtractTextPlugin('css/style.min.css'),
         <% } %>
 
         <% if (multiple) {%>
@@ -141,7 +141,7 @@ module.exports = {
             filename: 'info.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/info.html'),
             chunks: <% if (cache) {%>['info', 'vendor', 'manifest']<%} else {%>['info']<%}%>
-        })
+        }),
         <% }  else {%>
         new HtmlWebpackPlugin({
             filename: 'index.html',

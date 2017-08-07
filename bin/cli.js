@@ -223,10 +223,8 @@ function createApplication (name, path) {
 
                 if (program.multiple) {
                     var jsInfoTpl = loadTemplate('js/info.js');
-                    jsInfoTpl.locals = {
-                        cache: program.cache || false,
-                        css: jsAppTpl.locals.css
-                    }
+                    jsInfoTpl.locals.css = jsAppTpl.locals.css;
+                    jsInfoTpl.locals.cache = program.cache || false;
                     write(path + '/src/js/info.'+extname , jsInfoTpl.render());
                 }
 
@@ -303,7 +301,7 @@ function createApplication (name, path) {
         switch (program.css) {
             case "less":
                 pkg.devDependencies.less = "~2.4.0";
-                pkg.devDependencies["less-loader"] = "~2.4.0";
+                pkg.devDependencies["less-loader"] = "~4.0.5";
                 break;
             case "sass":
                 pkg.devDependencies["sass-loader"] = "~6.0.6";

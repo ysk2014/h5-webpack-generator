@@ -6,32 +6,8 @@ module.exports = {
     context: path.resolve(__dirname, '../src'),
 
     <% if (multiple) { %>
-        entry: {
-            app: [
-                'webpack-dev-server/client?http://localhost:3000',
-                //为webpack-dev-server的环境打包好运行代码
-                // 然后连接到指定服务器域名与端口
-
-                'webpack/hot/only-dev-server',
-                // 为热替换（HMR）打包好运行代码
-                // only- 意味着只有成功更新运行代码才会执行热替换（HMR）
-
-                './js/app.<%- extname %>'
-            ],
-            info: [
-                'webpack-dev-server/client?http://localhost:3000',
-                //为webpack-dev-server的环境打包好运行代码
-                // 然后连接到指定服务器域名与端口
-
-                'webpack/hot/only-dev-server',
-                // 为热替换（HMR）打包好运行代码
-                // only- 意味着只有成功更新运行代码才会执行热替换（HMR）
-
-                './js/info.<%- extname %>'
-            ]
-        },
-    <% } else {%>
-        entry: [
+    entry: {
+        app: [
             'webpack-dev-server/client?http://localhost:3000',
             //为webpack-dev-server的环境打包好运行代码
             // 然后连接到指定服务器域名与端口
@@ -42,6 +18,30 @@ module.exports = {
 
             './js/app.<%- extname %>'
         ],
+        info: [
+            'webpack-dev-server/client?http://localhost:3000',
+            //为webpack-dev-server的环境打包好运行代码
+            // 然后连接到指定服务器域名与端口
+
+            'webpack/hot/only-dev-server',
+            // 为热替换（HMR）打包好运行代码
+            // only- 意味着只有成功更新运行代码才会执行热替换（HMR）
+
+            './js/info.<%- extname %>'
+        ]
+    },
+    <% } else {%>
+    entry: [
+        'webpack-dev-server/client?http://localhost:3000',
+        //为webpack-dev-server的环境打包好运行代码
+        // 然后连接到指定服务器域名与端口
+
+        'webpack/hot/only-dev-server',
+        // 为热替换（HMR）打包好运行代码
+        // only- 意味着只有成功更新运行代码才会执行热替换（HMR）
+
+        './js/app.<%- extname %>'
+    ],
     <% } %>
     
     
@@ -59,27 +59,27 @@ module.exports = {
                 exclude: /node_modules/
             },
             <% if (jsLoader == 'coffeescript') {%>
-                {
-                    test: /\.coffee$/,
-                    exclude: /node_modules/,
-                    use: [
-                        {
-                            loader: 'coffee-loader',
-                            options: { sourceMap: true }
-                        }
-                    ]
-                },
+            {
+                test: /\.coffee$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'coffee-loader',
+                        options: { sourceMap: true }
+                    }
+                ]
+            },
             <% } else if (jsLoader == 'typescript') { %>
-                {
-                    test: /\.coffee$/,
-                    exclude: /node_modules/,
-                    use: [
-                        {
-                            loader: 'coffee-loader',
-                            options: { sourceMap: true }
-                        }
-                    ]
-                },
+            {
+                test: /\.coffee$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'coffee-loader',
+                        options: { sourceMap: true }
+                    }
+                ]
+            },
             <% } %>
             
             {
@@ -92,10 +92,10 @@ module.exports = {
                 use: ["style-loader", "css-loader", "less-loader"],
             }, 
             <% } else if (cssLoader == 'sass') {%>
-                {
-                    test: /\.scss$/,
-                    use: ["style-loader", "css-loader", "sass-loader"],
-                }, 
+            {
+                test: /\.scss$/,
+                use: ["style-loader", "css-loader", "sass-loader"],
+            }, 
             <% } %>
             
             {
