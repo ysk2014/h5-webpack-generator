@@ -11,6 +11,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-top: 100px;
 }
 
 img {
@@ -19,4 +20,5 @@ img {
 }
 h3 {
     flex: 1;
+    margin-top: 30px;
 }
