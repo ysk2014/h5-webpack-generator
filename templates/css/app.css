@@ -3,3 +3,20 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+#root {
+    text-align: center;
+    display: flex;
+    display: -webkit-flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+img {
+    flex: 1;
+    width: 100px;
+}
+h3 {
+    flex: 1;
+}

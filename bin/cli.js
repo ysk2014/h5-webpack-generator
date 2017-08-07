@@ -187,6 +187,7 @@ function createApplication (name, path) {
     pro.locals.jsLoader = dev.locals.jsLoader = program.js;
     pro.locals.cssLoader = dev.locals.cssLoader = program.css;
     pro.locals.fileLoader = dev.locals.fileLoader = program.font || false;
+    pro.locals.cache = dev.locals.cache = program.cache || false;
 
     if (program.js == 'coffeescript') {
         pro.locals.extname = dev.locals.extname = 'coffee';
@@ -201,30 +202,35 @@ function createApplication (name, path) {
             //js
             mkdir(path + '/src/js', () => {
                 var extname = dev.locals.extname;
-                var jstpl = loadTemplate('js/app.js');
+                var jsAppTpl = loadTemplate('js/app.js');
 
                 if (program.css == 'less') {
-                    jstpl.locals.css = 'less';
+                    jsAppTpl.locals.css = 'less';
                 } else if (program.css == 'sass') {
-                    jstpl.locals.css = 'scss';
+                    jsAppTpl.locals.css = 'scss';
                 } else {
-                    jstpl.locals.css = 'css';
+                    jsAppTpl.locals.css = 'css';
                 }
 
-                jstpl.locals.cache = program.cache;
-                
-                if (program.multiple) {
-                    copyTemplate(extname + '/info.' + extname, path + '/src/js/info.' + extname);
-                }
+                jsAppTpl.locals.cache = program.cache || false;
                 
                 if (program.cache) {
                     mkdir(path + '/src/js/libs', () => {
-                        copyTemplate(extname + '/libs/utils.' + extname, path + '/src/js/libs/utils.' + extname);
+                        copyTemplate('js/libs/utils.js', path + '/src/js/libs/utils.' + extname);
                         complete();
                     });
                 }
 
-                write(path + '/src/js/app.'+extname , jstpl.render());
+                if (program.multiple) {
+                    var jsInfoTpl = loadTemplate('js/info.js');
+                    jsInfoTpl.locals = {
+                        cache: program.cache || false,
+                        css: jsAppTpl.locals.css
+                    }
+                    write(path + '/src/js/info.'+extname , jsInfoTpl.render());
+                }
+
+                write(path + '/src/js/app.'+extname , jsAppTpl.render());
 
                 complete();
             });
@@ -271,10 +277,9 @@ function createApplication (name, path) {
         var pkg = {
             name: name,
             version: '0.0.0',
-            private: true,
             scripts: {
-                dev: './node_modoules/.bin/webpack-dev-server --config ./webpack/dev.js --open',
-                pro: './node_modoules/.bin/webpack --config ./webpack/pro.js'
+                dev: './node_modules/.bin/webpack-dev-server --config ./webpack/dev.js --open',
+                pro: './node_modules/.bin/webpack --config ./webpack/pro.js'
             },
             devDependencies: {
                 "babel-core": "~6.25.0",

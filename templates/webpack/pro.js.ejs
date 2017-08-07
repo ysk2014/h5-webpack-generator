@@ -1,7 +1,7 @@
 var path = require('path');
 var webpack =require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var htmlWebpackPlugin = require('html-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 
@@ -99,6 +99,10 @@ module.exports = {
 
     devtool: 'source-map',
 
+    resolve: {
+        extensions: ['.js', '.json' <% if (extname!= 'js'){%> ,'.<%= extname %>'<%}%>]
+    },
+
     plugins: [
         new CleanWebpackPlugin(['dist'], {
             root: path.resolve(__dirname, '../')
@@ -127,19 +131,19 @@ module.exports = {
         <% } %>
 
         <% if (multiple) {%>
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
             chunks: <% if (cache) {%>['app', 'vendor', 'manifest']<%} else {%>['app']<%}%>
         }),
 
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'info.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/info.html'),
             chunks: <% if (cache) {%>['info', 'vendor', 'manifest']<%} else {%>['info']<%}%>
         })
         <% }  else {%>
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
         }),

@@ -1,14 +1,14 @@
 var path = require('path');
-var webapck = require('webpack');
+var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    context: path.resolve(__dirname, 'src'),
+    context: path.resolve(__dirname, '../src'),
 
     <% if (multiple) { %>
         entry: {
             app: [
-                'webpack-dev-server/client?http:localhost:3000',
+                'webpack-dev-server/client?http://localhost:3000',
                 //为webpack-dev-server的环境打包好运行代码
                 // 然后连接到指定服务器域名与端口
 
@@ -19,7 +19,7 @@ module.exports = {
                 './js/app.<%- extname %>'
             ],
             info: [
-                'webpack-dev-server/client?http:localhost:3000',
+                'webpack-dev-server/client?http://localhost:3000',
                 //为webpack-dev-server的环境打包好运行代码
                 // 然后连接到指定服务器域名与端口
 
@@ -113,6 +113,10 @@ module.exports = {
 
     devtool: 'source-map',
 
+    resolve: {
+        extensions: ['.js', '.json'<% if (extname!= 'js'){%> ,'.<%= extname %>'<%}%>]
+    },
+
     devServer: {
         contentBase: path.resolve(__dirname,'../dist'),
 
@@ -139,19 +143,19 @@ module.exports = {
         // 当模块热替换（HMR）时在浏览器控制台输出对用户更友好的模块名字信息
 
         <% if (multiple) {%>
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
             chunks: ['app']
         }),
 
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'info.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/info.html'),
             chunks: ['info']
         })
         <% }  else {%>
-        new htmlWebpackPlugin({
+        new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
         }),
