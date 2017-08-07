@@ -142,17 +142,17 @@ function mkdir (path, fn) {
  * @param {String} str
  */
 
-function write (path, str, mode) {
-    fs.writeFileSync(path, str, { mode: mode || MODE_0666 })
-    console.log('   \x1b[36mcreate\x1b[0m : ' + path)
+function write (path, str, encode, mode) {
+    fs.writeFileSync(path, str, { mode: mode || MODE_0666, encoding: encode || 'utf-8' });
+    console.log('   \x1b[36mcreate\x1b[0m : ' + path);
 }
 
 /**
  * Copy file from template directory.
  */
-function copyTemplate (from, to) {
-    from = path.join(__dirname, '..', 'templates', from)
-    write(to, fs.readFileSync(from, 'utf-8'))
+function copyTemplate (from, to, encode) {
+    from = path.join(__dirname, '..', 'templates', from);
+    write(to, fs.readFileSync(from, encode || 'utf-8'), encode);
 }
 
 /**
@@ -259,7 +259,7 @@ function createApplication (name, path) {
             });
             //images
             mkdir(path + '/src/images', () => {
-                copyTemplate('images/app.png', path + '/src/images/app.png');
+                copyTemplate('images/app.jpg', path + '/src/images/app.jpg', 'binary');
                 complete();
             });
             //font
