@@ -16,6 +16,7 @@ var _exit = process.exit;
 var MODE_0666 = parseInt('0666', 8);
 var MODE_0755 = parseInt('0755', 8);
 
+process.exit = exit;
 
 program
     .version(version, '-v --version')
@@ -310,6 +311,7 @@ function createApplication (name, path) {
 
         if (program.js == 'coffeescript') {
             pkg.devDependencies["coffee-loader"] = "~0.7.3";
+            pkg.devDependencies["coffee-script"] = "~1.12.7";
         } else if (program.js == 'typescript') {
             pkg.devDependencies["ts-loader"] = "~2.3.2";
             pkg.devDependencies["typescript"] = "~2.1.5";

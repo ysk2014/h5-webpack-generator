@@ -76,7 +76,7 @@ module.exports = {
             <% } else if (cssLoader == 'sass') {%>
             {
                 test: /\.scss$/,
-                use: use: ExtractTextPlugin.extract({
+                use: ExtractTextPlugin.extract({
                     fallback: "style-loader",
                     use: ['css-loader','sass-loader'],
                     publicPath: '/css'
@@ -112,7 +112,7 @@ module.exports = {
 
         <% if (cache) {%>
         new webpack.optimize.CommonsChunkPlugin({
-             names: ['vendor', 'manifest'],
+             name: 'manifest',
              minChunks: Infinity, // 随着 入口chunk 越来越多，这个配置保证没其它的模块会打包进 公共chunk
         }),
         <% } %>
@@ -127,7 +127,7 @@ module.exports = {
         <% if (multiple) {%>
         new ExtractTextPlugin('css/[name].[contenthash].min.css'),
         <% } else { %>
-        new ExtractTextPlugin('css/style.min.css'),
+        new ExtractTextPlugin('css/style.[contenthash].min.css'),
         <% } %>
 
         <% if (multiple) {%>
@@ -148,10 +148,6 @@ module.exports = {
             template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
         }),
         <% } %>
-
-        new InlineManifestWebpackPlugin({
-            name: 'webpackManifest'
-        }),
 
         // 编译时(compile time)插件
         new webpack.DefinePlugin({

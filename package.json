@@ -4,14 +4,14 @@
   "description": "H5 application webpack generator",
   "main": "bin/cli.js",
   "bin": {
-    "h5-generator": "cli.js"
+    "h5-generator": "./bin/cli.js"
   },
   "directories": {
     "test": "test"
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter spec --bail --check-leaks test/"
   },
   "author": "",
   "keywords": [
@@ -30,7 +30,11 @@
     "eslint": "4.3.0",
     "eslint-config-standard": "10.2.1",
     "eslint-plugin-promise": "3.5.0",
-    "eslint-plugin-standard": "3.0.1"
+    "eslint-plugin-standard": "3.0.1",
+    "mocha": "^3.5.0",
+    "rimraf": "^2.6.1",
+    "supertest": "^3.0.0",
+    "validate-npm-package-name": "^3.0.0"
   },
   "dependencies": {
     "commander": "2.11.0",
