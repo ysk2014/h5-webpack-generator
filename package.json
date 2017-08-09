@@ -1,10 +1,10 @@
 {
   "name": "h5-webpack-generator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "H5 application webpack generator",
   "main": "bin/cli.js",
   "bin": {
-    "h5-generator": "./bin/cli.js"
+    "h5-webpack": "./bin/cli.js"
   },
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks test/"
