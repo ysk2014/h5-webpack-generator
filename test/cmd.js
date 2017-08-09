@@ -84,6 +84,11 @@ describe('h5-generator(1)', function() {
                 '  "dependencies": {}\n'+
                 '}\n')
         });
+        
+        it('should have installable devpendencies', function(done) {
+            this.timeout(300000);
+            npmInstall(ctx.dir, done);
+        });
     })
 });
 
@@ -99,8 +104,33 @@ function cleanup(dir, callback) {
     })
 }
 
+function childEnvironment() {
+    var env = Object.create(null);
+
+    for (var key in process.env) {
+        if (key.substr(0, 4) !== 'npm_') {
+            env[key] = process.env[key];
+        }
+    }
+
+    return env;
+}
+
+function npmInstall(dir, callback) {
+    var env = childEnvironment();
+
+    exec('npm install', {cwd: dir, env: env}, function(err, stderr) {
+        if (err) {
+            err.message += stderr;
+            callback(err);
+            return false;
+        }
+
+        callback();
+    })
+}
+
 function parseCreatedFiles(output, dir) {
-    console.log(output);
     var files = [];
     var lines = output.split(/[\r\n]+/);
     var match;
