@@ -225,14 +225,18 @@ function createApplication (name, path) {
         var prompt = launchedFromCmd() ? '>' : '$';
 
         console.log();
-        console.log('   install dependencies:');
+        console.log('   install devpendencies:');
+        console.log()
         console.log('     %s cd %s && npm install', prompt, path);
         console.log();
         console.log('   run the h5:');
-        console.log('     npm run dev');
+        console.log();
+        console.log('     $ npm run dev');
+        console.log();
         console.log('   build the h5:');
-        console.log('     npm run pro');
-        console.log()
+        console.log();
+        console.log('     $ npm run pro');
+        console.log();
     }
 
     let dev = loadTemplate('webpack/dev.js');
