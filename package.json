@@ -6,31 +6,29 @@
   "bin": {
     "h5-generator": "./bin/cli.js"
   },
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "lint": "eslint .",
     "test": "mocha --reporter spec --bail --check-leaks test/"
   },
-  "author": "",
+  "author": {
+    "name": "cluas",
+    "url": "https://github.com/ysk2014"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ysk2014/h5-webpack-generator.git"
+  },
   "keywords": [
-    "express",
-    "framework",
-    "sinatra",
-    "web",
-    "rest",
-    "restful",
-    "router",
-    "app",
-    "api"
+    "h5",
+    "webpack",
+    "webpack-dev-server",
+    "es2015",
+    "coffeescript",
+    "typescript",
+    "less",
+    "sass"
   ],
   "license": "ISC",
   "devDependencies": {
-    "eslint": "4.3.0",
-    "eslint-config-standard": "10.2.1",
-    "eslint-plugin-promise": "3.5.0",
-    "eslint-plugin-standard": "3.0.1",
     "mocha": "^3.5.0",
     "rimraf": "^2.6.1",
     "supertest": "^3.0.0",
