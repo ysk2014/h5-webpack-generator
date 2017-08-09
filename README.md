@@ -30,6 +30,11 @@ $ npm install
 $ npm run dev
 ```
 
+打包：
+```bash
+$ npm run pro
+```
+
 ## 命令行参数
 
 
