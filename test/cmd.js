@@ -85,11 +85,163 @@ describe('h5-generator(1)', function() {
                 '}\n')
         });
         
-        it('should have installable devpendencies', function(done) {
-            this.timeout(300000);
-            npmInstall(ctx.dir, done);
+        // it('should have installable devpendencies', function(done) {
+        //     this.timeout(300000);
+        //     npmInstall(ctx.dir, done);
+        // });
+    });
+
+    describe('unknown args', function() {
+        var ctx = setupTestEnvironment(this.fullTitle());
+
+        it('should exit with code 1', function(done) {
+            runRaw(ctx.dir, ['--foo'], function(err, code, stdout, stderr) {
+                if (err) return done(err);
+                assert.strictEqual(code, 1);
+                done();
+            });
         });
-    })
+
+        it('should print unknown option', function(done) {
+            runRaw(ctx.dir, ['--foo'], function(err, code, stdout, stderr) {
+                if (err) return done(err);
+                assert.ok(/error: unknown option/.test(stderr));
+                done();
+            });
+        });
+    });
+
+    describe('--css <engine>', function() {
+        describe('(no engine)', function() {
+            var ctx = setupTestEnvironment(this.fullTitle());
+
+            it('should exit with code 1', function(done) {
+                runRaw(ctx.dir, ['-c'], function(err, code, stdout, stderr) {
+                    if (err) return done(err);
+                    assert.strictEqual(code, 1);
+                    done();
+                });
+            });
+
+            it('should print argument missing', function(done) {
+                runRaw(ctx.dir, ['--css'], function (err, code, stdout, stderr) {
+                    if (err) return done(err);
+                    assert.ok(/error: option .* argument missing/.test(stderr));
+                    done();
+                });
+            });
+
+        });
+
+        describe('less', function() {
+            var ctx = setupTestEnvironment(this.fullTitle());
+
+            it('should create basic app with less files', function(done) {
+                run(ctx.dir, ['-c', 'less'], function(err, stdout) {
+                    if (err) return done(err);
+
+                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
+                    assert.equal(ctx.files.length, 14, 'should have 14 files');
+                    done();
+                });
+            });
+
+            it('should have less files', function() {
+                assert.notEqual(ctx.files.indexOf('src/css/app.less'), -1, 'should have app.less file');
+            });
+        });
+
+        describe('sass', function() {
+            var ctx = setupTestEnvironment(this.fullTitle());
+
+            it('should create basic app with sass files', function(done) {
+                run(ctx.dir, ['-c', 'sass'], function(err, stdout) {
+                    if (err) return done(err);
+
+                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
+                    assert.equal(ctx.files.length, 14, 'should have 14 files');
+                    done();
+                });
+            });
+
+            it('should have scss files', function() {
+                assert.notEqual(ctx.files.indexOf('src/css/app.scss'), -1, 'should have app.scss file');
+            });
+        });
+    });
+
+    describe('--js <engine>', function() {
+        describe('(no engine)', function() {
+            var ctx = setupTestEnvironment(this.fullTitle());
+
+            it('should exit with code 1', function(done) {
+                runRaw(ctx.dir, ['-j'], function(err, code, stdout, stderr) {
+                    if (err) return done(err);
+                    assert.strictEqual(code, 1);
+                    done();
+                });
+            });
+
+            it('should print argument missing', function(done) {
+                runRaw(ctx.dir, ['--js'], function (err, code, stdout, stderr) {
+                    if (err) return done(err);
+                    assert.ok(/error: option .* argument missing/.test(stderr));
+                    done();
+                });
+            });
+        });
+
+        describe('coffeescript', function() {
+            var ctx = setupTestEnvironment(this.fullTitle());
+
+            it('should create basic app with coffeescript files', function(done) {
+                run(ctx.dir, ['-j', 'coffeescript'], function(err, stdout) {
+                    if (err) return done(err);
+
+                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
+                    assert.equal(ctx.files.length, 14, 'should have 14 files');
+                    done();
+                });
+            });
+
+            it('should have coffeescript files', function() {
+                assert.notEqual(ctx.files.indexOf('src/js/app.coffee'), -1, 'should have app.coffee file');
+            });
+        });
+
+        describe('typescript', function() {
+            var ctx = setupTestEnvironment(this.fullTitle());
+
+            it('should create basic app with typescript files', function(done) {
+                run(ctx.dir, ['-j', 'typescript'], function(err, stdout) {
+                    if (err) return done(err);
+
+                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
+                    assert.equal(ctx.files.length, 14, 'should have 14 files');
+                    done();
+                });
+            });
+
+            it('should have typescript files', function() {
+                assert.notEqual(ctx.files.indexOf('src/js/app.ts'), -1, 'should have app.ts file');
+            });
+        });
+    });
+
+    describe('--multiple', function() {
+        var ctx = setupTestEnvironment(this.fullTitle());
+
+        it('should create multiple app', function(done) {
+            runRaw(ctx.dir, ['-m'], function(err, code, stdout, stderr) {
+                if (err) return done(err);
+                ctx.files = parseCreatedFiles(stdout, ctx.dir);
+                ctx.stderr = stderr;
+                ctx.stdout = stdout;
+                assert.equal(ctx.files.length, 17);
+                done();
+            });
+        });
+    });
 });
 
 
@@ -119,7 +271,7 @@ function childEnvironment() {
 function npmInstall(dir, callback) {
     var env = childEnvironment();
 
-    exec('npm install', {cwd: dir, env: env}, function(err, stderr) {
+    exec('cnpm install', {cwd: dir, env: env}, function(err, stderr) {
         if (err) {
             err.message += stderr;
             callback(err);
@@ -149,6 +301,25 @@ function parseCreatedFiles(output, dir) {
     }
 
     return files;
+}
+
+function run (dir, args, callback) {
+    runRaw(dir, args, function (err, code, stdout, stderr) {
+        if (err) {
+            return callback(err);
+        }
+
+        process.stderr.write(stripWarnings(stderr));
+
+        try {
+            assert.equal(stripWarnings(stderr), '');
+            assert.strictEqual(code, 0);
+        } catch (e) {
+            return callback(e);
+        }
+
+        callback(null, stripColors(stdout));
+    })
 }
 
 function runRaw(dir, args, callback) {
@@ -193,3 +364,13 @@ function setupTestEnvironment(name) {
 
     return ctx;
 }
+
+function stripColors (str) {
+    // eslint-disable-next-line no-control-regex
+    return str.replace(/\x1b\[(\d+)m/g, '_color_$1_');
+}
+
+function stripWarnings (str) {
+    return str.replace(/\n(?:\x20{2}warning: [^\n]+\n)+\n/g, '');
+}
+
