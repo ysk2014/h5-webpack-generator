@@ -328,6 +328,7 @@ function createApplication (name, path) {
             if (program.multiple) {
                 copyTemplate('html/info.html', path + '/src/info.html');
             }
+            
             complete();
         });
 
@@ -339,6 +340,7 @@ function createApplication (name, path) {
                 pro: './node_modules/.bin/webpack --config ./webpack/pro.js'
             },
             devDependencies: {
+                "autoprefixer": "~7.1.2",
                 "babel-core": "~6.25.0",
                 "babel-loader": "~7.1.1",
                 "babel-preset-es2015": "~6.24.1",
@@ -349,6 +351,7 @@ function createApplication (name, path) {
                 "html-webpack-plugin": "~2.30.1",
                 "html-withimg-loader": "~0.1.16",
                 "inline-manifest-webpack-plugin": "~3.0.1",
+                "postcss-loader": "~2.0.6",
                 "style-loader": "~0.18.2",
                 "url-loader": "~0.5.9",
                 "webpack": "~3.4.1",
@@ -385,7 +388,11 @@ function createApplication (name, path) {
             complete();
         });
 
+        //autoprefixer
+        copyTemplate('postcss.config.js', path + '/postcss.config.js');
+        //.gitignore
         copyTemplate('gitignore', path + '/.gitignore');
+
         complete();
     })
 }

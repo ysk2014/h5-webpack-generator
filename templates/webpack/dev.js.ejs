@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
     context: path.resolve(__dirname, '../src'),
@@ -84,17 +85,17 @@ module.exports = {
             
             {
                 test: /\.css$/,
-                use: ["style-loader", "css-loader"]
+                use: ["style-loader", "css-loader", "postcss-loader"]
             },
             <% if (cssLoader == 'less') { %>
             {
                 test: /\.less$/,
-                use: ["style-loader", "css-loader", "less-loader"],
+                use: ["style-loader", "css-loader", "postcss-loader", "less-loader"],
             }, 
             <% } else if (cssLoader == 'sass') {%>
             {
                 test: /\.scss$/,
-                use: ["style-loader", "css-loader", "sass-loader"],
+                use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
             }, 
             <% } %>
             

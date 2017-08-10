@@ -4,6 +4,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
     context: path.resolve(__dirname, '../src'),
@@ -65,7 +66,7 @@ module.exports = {
                         options: {
                             minimize: true //css压缩
                         }
-                    }],
+                    }, 'postcss-loader'],
                     publicPath: '/css'
                 })
             },
@@ -79,7 +80,7 @@ module.exports = {
                         options: {
                             minimize: true //css压缩
                         }
-                    },'less-loader'],
+                    }, 'postcss-loader', 'less-loader'],
                     publicPath: '/css'
                 })
             }, 
@@ -93,7 +94,7 @@ module.exports = {
                         options: {
                             minimize: true //css压缩
                         }
-                    },'sass-loader'],
+                    }, 'postcss-loader', 'sass-loader'],
                     publicPath: '/css'
                 })
             }, 
