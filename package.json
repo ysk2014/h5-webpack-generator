@@ -4,7 +4,7 @@
   "description": "H5 application webpack generator",
   "main": "bin/cli",
   "bin": {
-    "h5-webpack": "./bin/cli.js"
+    "h5-webpack": "./bin/cli"
   },
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks test/"
