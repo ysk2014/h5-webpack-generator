@@ -44,6 +44,7 @@ before(program, 'unknownOption', function () {
 
 program
     .version(version, '-v --version')
+    .usage('<project-name> [options]')
     .option('-c, --css <engine>', 'add stylesheet <engine> support (less|sass|css) (defaults to plain css)')
     .option('-j, --js <engine>', 'add js loader <engine> support (es2015|typescript|coffescript) (default es2015)')
     .option('-f, --font', 'add iconfont loader')
