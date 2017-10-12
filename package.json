@@ -1,10 +1,10 @@
 {
   "name": "h5-webpack-generator",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "H5 application webpack generator",
-  "main": "bin/h5-webpack",
+  "preferGlobal": true,
   "bin": {
-    "h5-webpack": "./bin/h5-webpack"
+    "h5-webpack": "bin/h5-webpack"
   },
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks test/"
