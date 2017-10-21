@@ -32,15 +32,21 @@ $ npm run dev
 
 打包：
 ```bash
-$ npm run pro
+$ npm run build
+```
+
+如果想使用`webpack-bundle-analyzer`插件，请使用：
+```
+$ npm run build --report
 ```
 
 ## 命令行参数
 
 
     -v, --version       output the version number
-    -j, --js <engine>   add js loader <engine> support (es2015|typescript|coffescript) (default es2015)
-    -c, --css <engine>  add stylesheet <engine> support (less|sass|css) (defaults to plain css)
     -m, --multiple      add multiple pages support
-    --cache             add webpack hash cache support
-    -f, --font          add font loader support
+    -c, --cache         add webpack hash cache support
+
+## 版本
+* 1.2.0: 把babel-preset-es2015替换成babel-preset-env
+* 1.3.0: 去掉对ts和coffeescript、sass的支持，默认支持es2015和less

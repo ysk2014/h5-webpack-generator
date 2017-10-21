@@ -1,123 +1,36 @@
 var path = require('path');
 var webpack =require('webpack');
+var merge = require('webpack-merge');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
-var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 
-module.exports = {
-    context: path.resolve(__dirname, '../src'),
+var baseWebpackConfig = require('./base');
 
-    entry: {
-        app: './js/app.<%- extname %>',
-        <% if (multiple) { %>
-        info: './js/info.<%- extname %>',
-        <% } %>
-        <% if (cache) {%>
-        vendor: ['./js/libs/utils.<%- extname %>']
-        <% } %>
-    },
-    
+<%if (cache) {%>
+baseWebpackConfig.entry['vendor'] = ['./js/libs/utils.js'];
+<%}%>
+
+baseWebpackConfig.module.rules[1].use = ExtractTextPlugin.extract({
+    fallback: "style-loader",
+    use: [{
+        loader: 'css-loader',
+        options: {
+            minimize: true //css压缩
+        }
+    }, 'postcss-loader', 'less-loader'],
+    publicPath: '/css'
+});
+
+webpackConfig = merge(baseWebpackConfig, {
     output: {
         path: path.resolve(__dirname, '../dist/'),
         filename: 'js/[name].[chunkHash].js',
         publicPath: '/',
         chunkFilename: "js/[name].[chunkHash].js",
     },
-
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
-            },
-            <% if (jsLoader == 'coffeescript') {%>
-            {
-                test: /\.coffee$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'coffee-loader',
-                        options: { sourceMap: true }
-                    }
-                ]
-            },
-            <% } else if (jsLoader == 'typescript') { %>
-            {
-                test: /\.coffee$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'coffee-loader',
-                        options: { sourceMap: true }
-                    }
-                ]
-            },
-            <% } %>
-            
-            {
-                test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: [{
-                        loader: 'css-loader',
-                        options: {
-                            minimize: true //css压缩
-                        }
-                    }, 'postcss-loader'],
-                    publicPath: '/css'
-                })
-            },
-            <% if (cssLoader == 'less') { %>
-            {
-                test: /\.less$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: [{
-                        loader: 'css-loader',
-                        options: {
-                            minimize: true //css压缩
-                        }
-                    }, 'postcss-loader', 'less-loader'],
-                    publicPath: '/css'
-                })
-            }, 
-            <% } else if (cssLoader == 'sass') {%>
-            {
-                test: /\.scss$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: [{
-                        loader: 'css-loader',
-                        options: {
-                            minimize: true //css压缩
-                        }
-                    }, 'postcss-loader', 'sass-loader'],
-                    publicPath: '/css'
-                })
-            }, 
-            <% } %>
-            
-            {
-                test: /\.(png|jpg|gif)$/,
-                loader: 'url-loader?limit=8192&name=images/[hash].[name].[ext]'
-            },
-            <% if (fileLoader) {%>
-            {
-                test: /\.(svg|ttf|eot|woff|woff2)$/,
-                loader: 'file-loader?name=fonts/[hash].[name].[ext]'
-            }
-            <% } %>
-        ]
-    },
-
-    devtool: 'source-map',
-
-    resolve: {
-        extensions: ['.js', '.json' <% if (extname!= 'js'){%> ,'.<%= extname %>'<%}%>]
-    },
+    devtool: false,
 
     plugins: [
         new CleanWebpackPlugin(['dist'], {
@@ -128,8 +41,8 @@ module.exports = {
 
         <% if (cache) {%>
         new webpack.optimize.CommonsChunkPlugin({
-             name: 'manifest',
-             minChunks: Infinity, // 随着 入口chunk 越来越多，这个配置保证没其它的模块会打包进 公共chunk
+            name: 'manifest',
+            minChunks: Infinity, // 随着 入口chunk 越来越多，这个配置保证没其它的模块会打包进 公共chunk
         }),
         <% } %>
 
@@ -137,13 +50,14 @@ module.exports = {
             compress: {
                 warnings: false,
                 drop_console: false,
-            }
+            },
+            sourceMap: true
         }),
 
         <% if (multiple) {%>
         new ExtractTextPlugin('css/[name].[contenthash].min.css'),
         <% } else { %>
-        new ExtractTextPlugin('css/style.[contenthash].min.css'),
+        new ExtractTextPlugin('css/all.[contenthash].min.css'),
         <% } %>
 
         <% if (multiple) {%>
@@ -170,5 +84,12 @@ module.exports = {
             'process.env.NODE_ENV': '"production"',
         }),
     ]
+});
 
+
+if (process.env.npm_config_report) {
+    var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
+
+module.exports = webpackConfig;

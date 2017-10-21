@@ -8,8 +8,8 @@ var rimraf = require('rimraf');
 var spawn = require('child_process').spawn;
 var validateNpmName = require('validate-npm-package-name');
 
-var PKG_PATH = path.resolve(__dirname, '..', 'package.json');
-var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin['h5-generator']);
+var PKG_PATH = path.join(__dirname, '..', 'package.json');
+var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin['h5-webpack']);
 var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()));
 
 describe('h5-generator(1)', function() {
@@ -33,12 +33,13 @@ describe('h5-generator(1)', function() {
                 ctx.files = parseCreatedFiles(stdout, ctx.dir);
                 ctx.stderr = stderr;
                 ctx.stdout = stdout;
-                assert.equal(ctx.files.length, 14);
+                assert.equal(ctx.files.length, 17);
                 done();
             })
         });
 
         it('should have webpack files', function() {
+            assert.notEqual(ctx.files.indexOf('webpack/base.js'), -1);
             assert.notEqual(ctx.files.indexOf('webpack/dev.js'), -1);
             assert.notEqual(ctx.files.indexOf('webpack/pro.js'), -1);
         });
@@ -48,7 +49,7 @@ describe('h5-generator(1)', function() {
         });
 
         it('should have css files', function() {
-            assert.notEqual(ctx.files.indexOf('src/css/app.css'), -1);
+            assert.notEqual(ctx.files.indexOf('src/css/app.less'), -1);
         });
 
         it('should have images files', function() {
@@ -63,32 +64,35 @@ describe('h5-generator(1)', function() {
                 '  "version": "0.0.0",\n' +
                 '  "scripts": {\n' +
                 '    "dev": "./node_modules/.bin/webpack-dev-server --config ./webpack/dev.js --open",\n' +
-                '    "pro": "./node_modules/.bin/webpack --config ./webpack/pro.js"\n' +
+                '    "build": "./node_modules/.bin/webpack --config ./webpack/pro.js"\n' +
                 '  },\n' +
                 '  "devDependencies": {\n' +
+                '    "autoprefixer": "~7.1.2",\n' +
                 '    "babel-core": "~6.25.0",\n' +
                 '    "babel-loader": "~7.1.1",\n' +
-                '    "babel-preset-es2015": "~6.24.1",\n' +
+                '    "babel-preset-env": "~1.6.1",\n' +
+                '    "babel-plugin-transform-runtime": "~6.23.0",\n' +
                 '    "clean-webpack-plugin": "~0.1.16",\n' +
                 '    "css-loader": "~0.28.4",\n' +
                 '    "extract-text-webpack-plugin": "~3.0.0",\n' +
                 '    "file-loader": "~0.11.2",\n' +
+                '    "friendly-errors-webpack-plugin": "~1.6.1",\n' +
                 '    "html-webpack-plugin": "~2.30.1",\n' +
                 '    "html-withimg-loader": "~0.1.16",\n' +
-                '    "inline-manifest-webpack-plugin": "~3.0.1",\n' +
+                '    "postcss-loader": "~2.0.6",\n' +
                 '    "style-loader": "~0.18.2",\n' +
                 '    "url-loader": "~0.5.9",\n' +
                 '    "webpack": "~3.4.1",\n' +
-                '    "webpack-dev-server": "~2.6.1"\n' +
+                '    "webpack-dev-server": "~2.6.1",\n' +
+                '    "webpack-bundle-analyzer": "^2.9.0",\n' +
+                '    "webpack-merge": "~4.1.0",\n' +
+                '    "less": "~2.4.0",\n' +
+                '    "less-loader": "~4.0.5"\n' +
                 '  },\n' +
                 '  "dependencies": {}\n'+
                 '}\n')
         });
         
-        // it('should have installable devpendencies', function(done) {
-        //     this.timeout(300000);
-        //     npmInstall(ctx.dir, done);
-        // });
     });
 
     describe('unknown args', function() {
@@ -111,123 +115,6 @@ describe('h5-generator(1)', function() {
         });
     });
 
-    describe('--css <engine>', function() {
-        describe('(no engine)', function() {
-            var ctx = setupTestEnvironment(this.fullTitle());
-
-            it('should exit with code 1', function(done) {
-                runRaw(ctx.dir, ['-c'], function(err, code, stdout, stderr) {
-                    if (err) return done(err);
-                    assert.strictEqual(code, 1);
-                    done();
-                });
-            });
-
-            it('should print argument missing', function(done) {
-                runRaw(ctx.dir, ['--css'], function (err, code, stdout, stderr) {
-                    if (err) return done(err);
-                    assert.ok(/error: option .* argument missing/.test(stderr));
-                    done();
-                });
-            });
-
-        });
-
-        describe('less', function() {
-            var ctx = setupTestEnvironment(this.fullTitle());
-
-            it('should create basic app with less files', function(done) {
-                run(ctx.dir, ['-c', 'less'], function(err, stdout) {
-                    if (err) return done(err);
-
-                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
-                    assert.equal(ctx.files.length, 14, 'should have 14 files');
-                    done();
-                });
-            });
-
-            it('should have less files', function() {
-                assert.notEqual(ctx.files.indexOf('src/css/app.less'), -1, 'should have app.less file');
-            });
-        });
-
-        describe('sass', function() {
-            var ctx = setupTestEnvironment(this.fullTitle());
-
-            it('should create basic app with sass files', function(done) {
-                run(ctx.dir, ['-c', 'sass'], function(err, stdout) {
-                    if (err) return done(err);
-
-                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
-                    assert.equal(ctx.files.length, 14, 'should have 14 files');
-                    done();
-                });
-            });
-
-            it('should have scss files', function() {
-                assert.notEqual(ctx.files.indexOf('src/css/app.scss'), -1, 'should have app.scss file');
-            });
-        });
-    });
-
-    describe('--js <engine>', function() {
-        describe('(no engine)', function() {
-            var ctx = setupTestEnvironment(this.fullTitle());
-
-            it('should exit with code 1', function(done) {
-                runRaw(ctx.dir, ['-j'], function(err, code, stdout, stderr) {
-                    if (err) return done(err);
-                    assert.strictEqual(code, 1);
-                    done();
-                });
-            });
-
-            it('should print argument missing', function(done) {
-                runRaw(ctx.dir, ['--js'], function (err, code, stdout, stderr) {
-                    if (err) return done(err);
-                    assert.ok(/error: option .* argument missing/.test(stderr));
-                    done();
-                });
-            });
-        });
-
-        describe('coffeescript', function() {
-            var ctx = setupTestEnvironment(this.fullTitle());
-
-            it('should create basic app with coffeescript files', function(done) {
-                run(ctx.dir, ['-j', 'coffeescript'], function(err, stdout) {
-                    if (err) return done(err);
-
-                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
-                    assert.equal(ctx.files.length, 14, 'should have 14 files');
-                    done();
-                });
-            });
-
-            it('should have coffeescript files', function() {
-                assert.notEqual(ctx.files.indexOf('src/js/app.coffee'), -1, 'should have app.coffee file');
-            });
-        });
-
-        describe('typescript', function() {
-            var ctx = setupTestEnvironment(this.fullTitle());
-
-            it('should create basic app with typescript files', function(done) {
-                run(ctx.dir, ['-j', 'typescript'], function(err, stdout) {
-                    if (err) return done(err);
-
-                    ctx.files = parseCreatedFiles(stdout, ctx.dir);
-                    assert.equal(ctx.files.length, 14, 'should have 14 files');
-                    done();
-                });
-            });
-
-            it('should have typescript files', function() {
-                assert.notEqual(ctx.files.indexOf('src/js/app.ts'), -1, 'should have app.ts file');
-            });
-        });
-    });
-
     describe('--multiple', function() {
         var ctx = setupTestEnvironment(this.fullTitle());
 
@@ -237,7 +124,7 @@ describe('h5-generator(1)', function() {
                 ctx.files = parseCreatedFiles(stdout, ctx.dir);
                 ctx.stderr = stderr;
                 ctx.stdout = stdout;
-                assert.equal(ctx.files.length, 17);
+                assert.equal(ctx.files.length, 20);
                 done();
             });
         });
@@ -245,7 +132,7 @@ describe('h5-generator(1)', function() {
         it('should have multiple files', function() {
             assert.notEqual(ctx.files.indexOf('src/info.html'), -1);
             assert.notEqual(ctx.files.indexOf('src/js/info.js'), -1);
-            assert.notEqual(ctx.files.indexOf('src/css/info.css'), -1);
+            assert.notEqual(ctx.files.indexOf('src/css/info.less'), -1);
         });
 
     });
@@ -259,7 +146,7 @@ describe('h5-generator(1)', function() {
                 ctx.files = parseCreatedFiles(stdout, ctx.dir);
                 ctx.stderr = stderr;
                 ctx.stdout = stdout;
-                assert.equal(ctx.files.length, 16);
+                assert.equal(ctx.files.length, 19);
                 done();
             });
         });

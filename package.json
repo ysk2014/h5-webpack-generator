@@ -1,8 +1,8 @@
 {
   "name": "h5-webpack-generator",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "H5 application webpack generator",
-  "preferGlobal": true,
+  "private": true,
   "bin": {
     "h5-webpack": "bin/h5-webpack"
   },
@@ -10,7 +10,7 @@
     "test": "mocha --reporter spec --bail --check-leaks test/"
   },
   "author": {
-    "name": "cluas",
+    "name": "claus",
     "url": "https://github.com/ysk2014"
   },
   "repository": {

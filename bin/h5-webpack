@@ -45,10 +45,7 @@ before(program, 'unknownOption', function () {
 program
     .version(version, '-v --version')
     .usage('<project-name> [options]')
-    .option('-c, --css <engine>', 'add stylesheet <engine> support (less|sass|css) (defaults to plain css)')
-    .option('-j, --js <engine>', 'add js loader <engine> support (es2015|typescript|coffescript) (default es2015)')
-    .option('-f, --font', 'add iconfont loader')
-    .option('--cache', 'add webpack cache')
+    .option('-c, --cache', 'add webpack cache')
     .option('-m, --multiple', 'creat multiple entry')
     .parse(process.argv);
 
@@ -236,82 +233,47 @@ function createApplication (name, path) {
         console.log();
         console.log('   build the h5:');
         console.log();
-        console.log('     $ npm run pro');
+        console.log('     $ npm run build');
         console.log();
     }
 
+    let base = loadTemplate('webpack/base.js');
     let dev = loadTemplate('webpack/dev.js');
     let pro = loadTemplate('webpack/pro.js');
 
-    pro.locals.multiple = dev.locals.multiple = program.multiple;
-    pro.locals.jsLoader = dev.locals.jsLoader = program.js;
-    pro.locals.cssLoader = dev.locals.cssLoader = program.css;
-    pro.locals.fileLoader = dev.locals.fileLoader = program.font || false;
-    pro.locals.cache = dev.locals.cache = program.cache || false;
-
-    if (program.js == 'coffeescript') {
-        pro.locals.extname = dev.locals.extname = 'coffee';
-    } else if (program.js == 'typescript') {
-        pro.locals.extname = dev.locals.extname = 'ts';
-    } else {
-        pro.locals.extname = dev.locals.extname = 'js';
-    }
+    pro.locals.multiple = dev.locals.multiple = base.locals.multiple = program.multiple;
+    pro.locals.cache = program.cache || false;
 
     mkdir(path, () => {
         mkdir(path + '/src', () => {
             //js
             mkdir(path + '/src/js', () => {
-                var extname = dev.locals.extname;
                 var jsAppTpl = loadTemplate('js/app.js');
-
-                if (program.css == 'less') {
-                    jsAppTpl.locals.css = 'less';
-                } else if (program.css == 'sass') {
-                    jsAppTpl.locals.css = 'scss';
-                } else {
-                    jsAppTpl.locals.css = 'css';
-                }
 
                 jsAppTpl.locals.cache = program.cache || false;
                 
                 if (program.cache) {
                     mkdir(path + '/src/js/libs', () => {
-                        copyTemplate('js/libs/utils.js', path + '/src/js/libs/utils.' + extname);
+                        copyTemplate('js/libs/utils.js', path + '/src/js/libs/utils.js');
                         complete();
                     });
                 }
 
                 if (program.multiple) {
                     var jsInfoTpl = loadTemplate('js/info.js');
-                    jsInfoTpl.locals.css = jsAppTpl.locals.css;
                     jsInfoTpl.locals.cache = program.cache || false;
-                    write(path + '/src/js/info.'+extname , jsInfoTpl.render());
+                    write(path + '/src/js/info.js' , jsInfoTpl.render());
                 }
 
-                write(path + '/src/js/app.'+extname , jsAppTpl.render());
+                write(path + '/src/js/app.js' , jsAppTpl.render());
 
                 complete();
             });
             //css
             mkdir(path + '/src/css', () => {
-                switch (program.css) {
-                    case 'less':
-                        copyTemplate('less/app.less', path + '/src/css/app.less');
-                        if (program.multiple) {
-                            copyTemplate('less/info.less', path + '/src/css/info.less');
-                        }
-                        break;
-                    case 'sass':
-                        copyTemplate('sass/app.scss', path + '/src/css/app.scss');
-                        if (program.multiple) {
-                            copyTemplate('sass/info.scss', path + '/src/css/info.scss');
-                        }
-                        break;
-                    default:
-                        copyTemplate('css/app.css', path + '/src/css/app.css');
-                        if (program.multiple) {
-                            copyTemplate('css/info.css', path + '/src/css/info.css');
-                        }
+                copyTemplate('less/app.less', path + '/src/css/app.less');
+                if (program.multiple) {
+                    copyTemplate('less/info.less', path + '/src/css/info.less');
                 }
                 complete();
             });
@@ -320,10 +282,6 @@ function createApplication (name, path) {
                 copyTemplate('images/app.jpg', path + '/src/images/app.jpg', 'binary');
                 complete();
             });
-            //font
-            if (program.font) {
-                mkdir(path + '/src/font');
-            }
             //html
             copyTemplate('html/index.html', path + '/src/index.html');
             if (program.multiple) {
@@ -338,7 +296,7 @@ function createApplication (name, path) {
             version: '0.0.0',
             scripts: {
                 dev: './node_modules/.bin/webpack-dev-server --config ./webpack/dev.js --open',
-                pro: './node_modules/.bin/webpack --config ./webpack/pro.js'
+                build: './node_modules/.bin/webpack --config ./webpack/pro.js'
             },
             devDependencies: {
                 "autoprefixer": "~7.1.2",
@@ -350,34 +308,20 @@ function createApplication (name, path) {
                 "css-loader": "~0.28.4",
                 "extract-text-webpack-plugin": "~3.0.0",
                 "file-loader": "~0.11.2",
+                "friendly-errors-webpack-plugin": "~1.6.1",
                 "html-webpack-plugin": "~2.30.1",
                 "html-withimg-loader": "~0.1.16",
-                "inline-manifest-webpack-plugin": "~3.0.1",
                 "postcss-loader": "~2.0.6",
                 "style-loader": "~0.18.2",
                 "url-loader": "~0.5.9",
                 "webpack": "~3.4.1",
-                "webpack-dev-server": "~2.6.1"
+                "webpack-dev-server": "~2.6.1",
+                "webpack-bundle-analyzer": "^2.9.0",
+                "webpack-merge": "~4.1.0",
+                "less": "~2.4.0",
+                "less-loader": "~4.0.5"
             },
             dependencies: {}
-        }
-
-        switch (program.css) {
-            case "less":
-                pkg.devDependencies.less = "~2.4.0";
-                pkg.devDependencies["less-loader"] = "~4.0.5";
-                break;
-            case "sass":
-                pkg.devDependencies["sass-loader"] = "~6.0.6";
-                pkg.devDependencies["node-sass"] = "~4.5.3";
-        }
-
-        if (program.js == 'coffeescript') {
-            pkg.devDependencies["coffee-loader"] = "~0.7.3";
-            pkg.devDependencies["coffee-script"] = "~1.12.7";
-        } else if (program.js == 'typescript') {
-            pkg.devDependencies["ts-loader"] = "~2.3.2";
-            pkg.devDependencies["typescript"] = "~2.1.5";
         }
 
         // sort dependencies like npm(1)
@@ -385,6 +329,7 @@ function createApplication (name, path) {
         write(path + '/package.json', JSON.stringify(pkg, null, 2) + '\n');
 
         mkdir(path + '/webpack', () => {
+            write(path + '/webpack/base.js', base.render());
             write(path + '/webpack/dev.js', dev.render());
             write(path + '/webpack/pro.js', pro.render());
             complete();
