@@ -27,7 +27,7 @@ var multipleHtml = [{
 }]
 <% } %>
 
-multipleHtml.forEach(functional(item) {
+multipleHtml.forEach(function(item) {
     baseWebpackConfig.plugins.push(new HtmlWebpackPlugin({
         filename: item.filename,
         template: 'html-withimg-loader!'+path.resolve(__dirname, item.path),
