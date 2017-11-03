@@ -23,6 +23,31 @@ baseWebpackConfig.module.rules[1].use = ExtractTextPlugin.extract({
     publicPath: '/css'
 });
 
+<% if (multiple) {%>
+var multipleHtml = [{
+    filename: "index.html",
+    path: "../src/index.html",
+    chunks: <% if (cache) {%>['app', 'vendor', 'manifest']<%} else {%>['app']<%}%>
+}, {
+    filename: "info.html",
+    path: "../src/info.html",
+    chunks:<% if (cache) {%>['info', 'vendor', 'manifest']<%} else {%>['info']<%}%>
+}];
+<% } else {%>
+var multipleHtml = [{
+    filename: "index.html",
+    path: "../src/index.html",
+}]
+<% } %>
+
+multipleHtml.forEach(functional(item) {
+    baseWebpackConfig.plugins.push(new HtmlWebpackPlugin({
+        filename: item.filename,
+        template: 'html-withimg-loader!'+path.resolve(__dirname, item.path),
+        chunks: item.chunks
+    }));
+});
+
 webpackConfig = merge(baseWebpackConfig, {
     output: {
         path: path.resolve(__dirname, '../dist/'),
@@ -58,25 +83,6 @@ webpackConfig = merge(baseWebpackConfig, {
         new ExtractTextPlugin('css/[name].[contenthash].min.css'),
         <% } else { %>
         new ExtractTextPlugin('css/all.[contenthash].min.css'),
-        <% } %>
-
-        <% if (multiple) {%>
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
-            chunks: <% if (cache) {%>['app', 'vendor', 'manifest']<%} else {%>['app']<%}%>
-        }),
-
-        new HtmlWebpackPlugin({
-            filename: 'info.html',
-            template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/info.html'),
-            chunks: <% if (cache) {%>['info', 'vendor', 'manifest']<%} else {%>['info']<%}%>
-        }),
-        <% }  else {%>
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
-        }),
         <% } %>
 
         // 编译时(compile time)插件

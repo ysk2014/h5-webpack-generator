@@ -8,7 +8,33 @@ var baseWebpackConfig = require('./base');
 
 Object.keys(baseWebpackConfig.entry).forEach(function (name) {
     baseWebpackConfig.entry[name] = ['webpack-dev-server/client?http://localhost:3000', 'webpack/hot/only-dev-server'].concat(baseWebpackConfig.entry[name])
-})
+});
+
+<% if (multiple) {%>
+var multipleHtml = [{
+    filename: "index.html",
+    path: "../src/index.html",
+    chunks:["app"]
+}, {
+    filename: "info.html",
+    path: "../src/info.html",
+    chunks:["info"]
+}];
+<% } else {%>
+var multipleHtml = [{
+    filename: "index.html",
+    path: "../src/index.html",
+}]
+<% } %>
+
+multipleHtml.forEach(functional(item) {
+    baseWebpackConfig.plugins.push(new HtmlWebpackPlugin({
+        filename: item.filename,
+        template: 'html-withimg-loader!'+path.resolve(__dirname, item.path),
+        chunks: item.chunks
+    }));
+});
+
 
 module.exports = merge(baseWebpackConfig, {
     output: {
@@ -43,24 +69,5 @@ module.exports = merge(baseWebpackConfig, {
         // 当模块热替换（HMR）时在浏览器控制台输出对用户更友好的模块名字信息
         
         new FriendlyErrorsPlugin(),
-
-        <% if (multiple) {%>
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
-            chunks: ['app']
-        }),
-
-        new HtmlWebpackPlugin({
-            filename: 'info.html',
-            template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/info.html'),
-            chunks: ['info']
-        })
-        <% }  else {%>
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'html-withimg-loader!'+path.resolve(__dirname, '../src/index.html'),
-        }),
-        <% } %>
     ]
 });
