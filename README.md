@@ -51,3 +51,4 @@ $ npm run build --report
 * 1.2.0: 把babel-preset-es2015替换成babel-preset-env
 * 1.3.0: 去掉对ts和coffeescript、sass的支持，默认支持es2015和less，添加对`webpack-bundle-analyzer`插件的支持
 * 1.3.2: 对多页面配置的优化
+* 1.3.3: 对dev环境webpack配置优化
