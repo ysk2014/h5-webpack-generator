@@ -62,7 +62,7 @@ webpackConfig = merge(baseWebpackConfig, {
             root: path.resolve(__dirname, '../')
         }),
 
-        new webpack.NamedModulesPlugin(),
+        new webpack.HashedModuleIdsPlugin(),
 
         <% if (cache) {%>
         new webpack.optimize.CommonsChunkPlugin({
