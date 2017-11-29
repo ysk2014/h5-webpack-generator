@@ -45,7 +45,6 @@ before(program, 'unknownOption', function () {
 program
     .version(version, '-v --version')
     .usage('<project-name> [options]')
-    .option('-c, --cache', 'add webpack cache')
     .option('-m, --multiple', 'creat multiple entry')
     .parse(process.argv);
 
@@ -215,7 +214,7 @@ function copyTemplate (from, to, encode) {
  * @param {String} path
  */
 function createApplication (name, path) {
-    var wait = program.cache ? 7 : 6;
+    var wait = 7;
 
     console.log();
     function complete () {
@@ -242,7 +241,6 @@ function createApplication (name, path) {
     let pro = loadTemplate('webpack/pro.js');
 
     pro.locals.multiple = dev.locals.multiple = base.locals.multiple = program.multiple;
-    pro.locals.cache = program.cache || false;
 
     mkdir(path, () => {
         mkdir(path + '/src', () => {
@@ -250,18 +248,13 @@ function createApplication (name, path) {
             mkdir(path + '/src/js', () => {
                 var jsAppTpl = loadTemplate('js/app.js');
 
-                jsAppTpl.locals.cache = program.cache || false;
-                
-                if (program.cache) {
-                    mkdir(path + '/src/js/libs', () => {
-                        copyTemplate('js/libs/utils.js', path + '/src/js/libs/utils.js');
-                        complete();
-                    });
-                }
+                mkdir(path + '/src/js/libs', () => {
+                    copyTemplate('js/libs/utils.js', path + '/src/js/libs/utils.js');
+                    complete();
+                });
 
                 if (program.multiple) {
                     var jsInfoTpl = loadTemplate('js/info.js');
-                    jsInfoTpl.locals.cache = program.cache || false;
                     write(path + '/src/js/info.js' , jsInfoTpl.render());
                 }
 

@@ -5,15 +5,11 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var autoprefixer = require('autoprefixer');
-<%if (cache) {%>
 var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
-<%}%>
 
 var baseWebpackConfig = require('./base');
 
-<%if (cache) {%>
 baseWebpackConfig.entry['vendor'] = ['./js/libs/utils.js'];
-<%}%>
 
 baseWebpackConfig.module.rules[1].use = ExtractTextPlugin.extract({
     fallback: "style-loader",
@@ -30,16 +26,17 @@ baseWebpackConfig.module.rules[1].use = ExtractTextPlugin.extract({
 var multipleHtml = [{
     filename: "index.html",
     path: "../src/index.html",
-    chunks: <% if (cache) {%>['app', 'vendor', 'manifest']<%} else {%>['app']<%}%>
+    chunks: ['manifest', 'vendor', 'app']
 }, {
     filename: "info.html",
     path: "../src/info.html",
-    chunks:<% if (cache) {%>['info', 'vendor', 'manifest']<%} else {%>['info']<%}%>
+    chunks:['manifest', 'vendor', 'info']
 }];
 <% } else {%>
 var multipleHtml = [{
     filename: "index.html",
     path: "../src/index.html",
+    chunks: ['manifest', 'vendor', 'app']
 }]
 <% } %>
 
@@ -67,7 +64,6 @@ webpackConfig = merge(baseWebpackConfig, {
 
         new webpack.HashedModuleIdsPlugin(),
 
-        <% if (cache) {%>
         new webpack.optimize.CommonsChunkPlugin({
             names: ['manifest','vendor'].reverse(),
             minChunks: Infinity, // 随着 入口chunk 越来越多，这个配置保证没其它的模块会打包进 公共chunk
@@ -81,7 +77,6 @@ webpackConfig = merge(baseWebpackConfig, {
         }),
 
         new InlineManifestWebpackPlugin(),
-        <% } %>
 
         new webpack.optimize.UglifyJsPlugin({
             compress: {
