@@ -55,3 +55,4 @@ $ npm run build --report
 * 1.3.5：针对缓存持久化做一些修复，生成稳定的ChunkId和ModuleId 
 * 1.3.6: 使用inline-manifest-webpack-plugin插件把manifest打包到html里面
 * 1.3.7: 去除--cache参数，改为默认
+* 1.3.8: 更新test

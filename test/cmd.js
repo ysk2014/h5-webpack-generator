@@ -136,25 +136,6 @@ describe('h5-generator(1)', function() {
         });
 
     });
-
-    describe('--cache', function() {
-        var ctx = setupTestEnvironment(this.fullTitle());
-
-        it('should create cache app', function(done) {
-            runRaw(ctx.dir, ['--cache'], function(err, code, stdout, stderr) {
-                if (err) return done(err);
-                ctx.files = parseCreatedFiles(stdout, ctx.dir);
-                ctx.stderr = stderr;
-                ctx.stdout = stdout;
-                assert.equal(ctx.files.length, 19);
-                done();
-            });
-        });
-
-        it('should have cache file', function() {
-            assert.notEqual(ctx.files.indexOf('src/js/libs/utils.js'), -1);
-        });
-    })
 });
 
 
