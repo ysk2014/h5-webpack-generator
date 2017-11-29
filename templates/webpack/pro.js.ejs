@@ -5,6 +5,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var autoprefixer = require('autoprefixer');
+<%if (cache) {%>
+var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin');
+<%}%>
 
 var baseWebpackConfig = require('./base');
 
@@ -66,9 +69,18 @@ webpackConfig = merge(baseWebpackConfig, {
 
         <% if (cache) {%>
         new webpack.optimize.CommonsChunkPlugin({
-            name: 'manifest',
+            names: ['manifest','vendor'].reverse(),
             minChunks: Infinity, // 随着 入口chunk 越来越多，这个配置保证没其它的模块会打包进 公共chunk
         }),
+
+        new webpack.NamedChunksPlugin(function(chunk) {
+            if (chunk.name) {
+                return chunk.name;
+            }
+            return chunk.mapModules(function(m) {return path.relative(m.context, m.request)}).join('_');
+        }),
+
+        new InlineManifestWebpackPlugin(),
         <% } %>
 
         new webpack.optimize.UglifyJsPlugin({
