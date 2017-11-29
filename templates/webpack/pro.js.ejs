@@ -46,7 +46,7 @@ var multipleHtml = [{
 multipleHtml.forEach(function(item) {
     baseWebpackConfig.plugins.push(new HtmlWebpackPlugin({
         filename: item.filename,
-        template: 'html-withimg-loader!'+path.resolve(__dirname, item.path),
+        template: 'inline-html-withimg-loader!'+path.resolve(__dirname, item.path),
         chunks: item.chunks
     }));
 });
