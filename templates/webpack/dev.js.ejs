@@ -20,13 +20,14 @@ var multipleHtml = [{
 var multipleHtml = [{
     filename: "index.html",
     path: "../src/index.html",
+    chunks:["app"]
 }]
 <% } %>
 
 multipleHtml.forEach(function(item) {
     baseWebpackConfig.plugins.push(new HtmlWebpackPlugin({
         filename: item.filename,
-        template: 'html-withimg-loader!'+path.resolve(__dirname, item.path),
+        template: 'line-html-withimg-loader!'+path.resolve(__dirname, item.path),
         chunks: item.chunks
     }));
 });
