@@ -1,6 +1,6 @@
 {
   "name": "h5-webpack-generator",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "H5 application webpack generator",
   "bin": {
     "h5-webpack": "bin/h5-webpack"
