@@ -19,7 +19,6 @@ baseWebpackConfig.module.rules[1].use = ExtractTextPlugin.extract({
             minimize: true //css压缩
         }
     }, 'postcss-loader', 'less-loader'],
-    publicPath: '/css'
 });
 
 <% if (multiple) {%>
