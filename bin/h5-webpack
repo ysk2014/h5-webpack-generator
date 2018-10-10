@@ -7,7 +7,6 @@ var path = require('path');
 var program = require('commander');
 var readline = require('readline');
 var sortedObject = require('sorted-object');
-var util = require('util');
 
 var pkg = require('../package.json');
 var version = pkg.version;
@@ -44,8 +43,7 @@ before(program, 'unknownOption', function () {
 
 program
     .version(version, '-v --version')
-    .usage('<project-name> [options]')
-    .option('-m, --multiple', 'creat multiple entry')
+    .usage('h5-webpack <project-name>')
     .parse(process.argv);
 
 if (!exit.exited) {
@@ -240,7 +238,6 @@ function createApplication (name, path) {
     let dev = loadTemplate('webpack/dev.js');
     let pro = loadTemplate('webpack/pro.js');
 
-    pro.locals.multiple = dev.locals.multiple = base.locals.multiple = program.multiple;
 
     mkdir(path, () => {
         mkdir(path + '/src', () => {
@@ -253,11 +250,6 @@ function createApplication (name, path) {
                     complete();
                 });
 
-                if (program.multiple) {
-                    var jsInfoTpl = loadTemplate('js/info.js');
-                    write(path + '/src/js/info.js' , jsInfoTpl.render());
-                }
-
                 write(path + '/src/js/app.js' , jsAppTpl.render());
 
                 complete();
@@ -265,9 +257,6 @@ function createApplication (name, path) {
             //css
             mkdir(path + '/src/css', () => {
                 copyTemplate('less/app.less', path + '/src/css/app.less');
-                if (program.multiple) {
-                    copyTemplate('less/info.less', path + '/src/css/info.less');
-                }
                 complete();
             });
             //images
@@ -277,43 +266,42 @@ function createApplication (name, path) {
             });
             //html
             copyTemplate('html/index.html', path + '/src/index.html');
-            if (program.multiple) {
-                copyTemplate('html/info.html', path + '/src/info.html');
-            }
-            
             complete();
         });
 
         var pkg = {
             name: name,
-            version: '0.0.0',
+            version: '1.0.0',
             scripts: {
                 dev: './node_modules/.bin/webpack-dev-server --config ./webpack/dev.js --open',
-                build: './node_modules/.bin/webpack --config ./webpack/pro.js'
+                build: 'cross-env NODE_ENV=production ./node_modules/.bin/webpack --config ./webpack/pro.js'
             },
             devDependencies: {
-                "autoprefixer": "~7.1.2",
-                "babel-core": "~6.25.0",
-                "babel-loader": "~7.1.1",
-                "babel-preset-env": "~1.6.1",
-                "babel-plugin-transform-runtime": "~6.23.0",
-                "clean-webpack-plugin": "~0.1.16",
-                "css-loader": "~0.28.4",
-                "extract-text-webpack-plugin": "~3.0.0",
-                "file-loader": "~0.11.2",
-                "friendly-errors-webpack-plugin": "~1.6.1",
-                "html-webpack-plugin": "~2.30.1",
-                "inline-html-withimg-loader": "~1.0.0",
-                "inline-manifest-webpack-plugin": "~3.0.1",
-                "postcss-loader": "~2.0.6",
-                "style-loader": "~0.18.2",
-                "url-loader": "~0.5.9",
-                "webpack": "~3.4.1",
-                "webpack-dev-server": "~2.6.1",
-                "webpack-bundle-analyzer": "^2.9.0",
-                "webpack-merge": "~4.1.0",
-                "less": "~2.4.0",
-                "less-loader": "~4.0.5"
+                "@babel/core": "^7.1.2",
+                "@babel/plugin-transform-runtime": "^7.1.0",
+                "@babel/preset-env": "^7.1.0",
+                "autoprefixer": "^9.1.5",
+                "babel-loader": "^8.0.4",
+                "clean-webpack-plugin": "^0.1.19",
+                "cross-env": "^5.2.0",
+                "css-loader": "^0.28.11",
+                "file-loader": "^2.0.0",
+                "friendly-errors-webpack-plugin": "^1.7.0",
+                "html-webpack-plugin": "^3.2.0",
+                "inline-html-withimg-loader": "^1.0.0",
+                "less": "^2.4.0",
+                "less-loader": "^4.0.6",
+                "mini-css-extract-plugin": "^0.4.3",
+                "optimize-css-assets-webpack-plugin": "^5.0.1",
+                "postcss-loader": "^2.0.10",
+                "style-loader": "^0.18.2",
+                "uglifyjs-webpack-plugin": "^2.0.1",
+                "url-loader": "^0.5.9",
+                "webpack": "^4.20.2",
+                "webpack-bundle-analyzer": "^3.0.2",
+                "webpack-cli": "^3.1.2",
+                "webpack-dev-server": "^3.1.9",
+                "webpack-merge": "^4.1.4"
             },
             dependencies: {}
         }

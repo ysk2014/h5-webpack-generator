@@ -1,12 +1,12 @@
-var path = require('path');
+const path = require('path');
+const devMode = process.env.NODE_ENV !== 'production'
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     context: path.resolve(__dirname, '../src'),
+    mode: devMode ? "development" : "production",
     entry: {
-        app: './js/app.js',
-        <% if (multiple) { %>
-        info: './js/info.js',
-        <% } %>
+        app: './js/app.js'
     },
     module: {
         rules: [
@@ -18,12 +18,20 @@ module.exports = {
             
             {
                 test: /\.less$/,
-                use: ["style-loader", "css-loader", "postcss-loader", "less-loader"],
+                use: [devMode ? 'style-loader' : MiniCssExtractPlugin.loader, "css-loader", "postcss-loader", "less-loader"],
             }, 
             
             {
                 test: /\.(png|jpg|gif)$/,
                 loader: 'url-loader?limit=8192&name=images/[hash].[name].[ext]'
+            },
+            {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader?limit=8192&name=fonts/[hash].[name].[ext]'
+            },
+            {
+                test: /\.(webm|mp4|ogv)$/,
+                loader: 'file-loader?name=video/[hash].[name].[ext]'
             }
         ]
     },
